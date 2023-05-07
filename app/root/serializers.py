@@ -71,12 +71,13 @@ class LoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lote
         fields = '__all__'
-        #exclude = ['isDelete','created_at']
+        #exclude = ['isDelete']
 
 class LoteListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Lote
-        exclude = ['isDelete','created_at']
+        fields = '__all__'
+        #exclude = ['isDelete']
         depth = 1
 
 class PedidoSerializer(serializers.ModelSerializer):

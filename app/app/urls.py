@@ -17,12 +17,16 @@ from django.contrib import admin
 from django.urls import path, include
 #from root.controllers._auth import Login,Logout
 from rest_framework.authtoken.views import obtain_auth_token#, TokenVerifyView
-from root.views import LoginV2,logout
+from root.views import Login,logout,check, home,lotByProduct, productByCodigo
 
 urlpatterns = [
+    #path('',home.as_view()),
+    path('login/', Login.as_view()),
+    path('logout/',logout.as_view()),
+    path('check/',check.as_view()),
+    path('lotByProduct/',lotByProduct.as_view()),
+    path('product/codigo/',productByCodigo.as_view()),
     path('admin/', admin.site.urls, name = 'admin'),
     path('auth/', include('rest_framework.urls','rest')),
-    path('login/', LoginV2.as_view()),
-    path('logout/',logout.as_view()),
     path('',include('root.urls')),
 ]

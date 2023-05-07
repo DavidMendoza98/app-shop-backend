@@ -162,7 +162,7 @@ class CategoriaViewSet(viewsets.ModelViewSet):
     queryset = Categoria.objects.all().filter(isDelete=False)
     serializer_class = CategoriaSerializer
     authentication_classes=[TokenAuthentication] 
-    http_method_names = ['get']
+    http_method_names = ['get','post','put','delete']
 
     def list(self, request, *args, **kwargs):
         # Obtener todos los objetos de la base de datos
@@ -192,6 +192,42 @@ class CategoriaViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_401_UNAUTHORIZED
             )
         return Response(serializer.data)
+
+
+    def create(self, request, *args, **kwargs):
+        permisos = request.user.get_all_permissions()
+        if(not "root.add_categoria" in permisos):
+            return Response(
+                {"error": "No cuenta con los permisos"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        return super().create(request, *args, **kwargs)
+    
+    def update(self, request, *args, **kwargs):
+        permisos = request.user.get_all_permissions()
+        if(not "root.change_categoria" in permisos):
+            return Response(
+                {"error": "No cuenta con los permisos"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        return super().update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        permisos = request.user.get_all_permissions()
+        if(not "root.delete_categoria" in permisos):
+            return Response(
+                {"error": "No cuenta con los permisos"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        # Obtenga el objeto que se va a eliminar utilizando el ID de la URL
+        instance = self.get_object()
+
+        # Actualice el campo isDelete en el objeto y guárdelo en la base de datos
+        instance.isDelete = True
+        instance.save()
+
+        # Devuelva una respuesta adecuada
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class ProductoViewSet(viewsets.ModelViewSet):
     queryset = Producto.objects.all().filter(isDelete=False)
@@ -265,7 +301,7 @@ class ProductoViewSet(viewsets.ModelViewSet):
 class LoteViewSet(viewsets.ModelViewSet):
     queryset = Lote.objects.all().filter(isDelete=False)
     serializer_class = LoteSerializer
-    #authentication_classes=[TokenAuthentication] 
+    authentication_classes=[TokenAuthentication] 
     http_method_names = ['get', 'post', 'put', 'delete']
 
     def list(self, request, *args, **kwargs):
@@ -286,7 +322,7 @@ class LoteViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = ProductoListSerializer(instance)
+        serializer = LoteListSerializer(instance)
 
         permisos = request.user.get_all_permissions()
         if(not "root.view_lote" in permisos):
